@@ -1,118 +1,107 @@
-package com.example.flappybirdisreal;
+package com.example.flappybirdisreal
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.util.Log;
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import java.util.ArrayList
 
-import java.util.ArrayList;
+// Класс Bird, представляющий птицу в игре
+class Bird : BaseObject() {
+    // Список битмапов (изображений), представляющих различные кадры анимации птицы.
+    private var _bitmaps: ArrayList<Bitmap?> = ArrayList<Bitmap?>()
 
-public class Bird extends BaseObject {
-    public ArrayList<Bitmap> arrBms = new ArrayList<>();
-    private int cout, vFlap, idCurrentBitmap;
-    private float drop;
+    // Счетчик кадров для управления анимацией.
+    private var count: Int = 0
 
-    public Bird() {
-        this.cout = 0;
-        this.vFlap = 5;
-        this.idCurrentBitmap = 0;
-        this.drop = 0;
+    // Количество кадров между сменой изображений (скорость махания крыльев).
+    private var vFlap: Int = 5
+    private var idCurrentBitmap: Int = 0
+
+    // Параметр падения птицы (ускорение).
+    private var drop: Float = 0f
+
+    // Устанавливает значение ускорения падения.
+    fun setDrop(drop: Float) {
+        this.drop = drop
     }
 
-    public int getCout() {
-        return cout;
+    // Метод для рисования птицы на канве.
+    fun draw(canvas: Canvas) {
+        drop() // Вызываем обновление позиции птицы.
+
+        val bitmap = this.getBm() // Получаем текущий битмап для отображения.
+        if (bitmap != null)
+            canvas.drawBitmap(bitmap, this._x, this._y, null) // Рисуем битмап на текущих координатах.
     }
 
-    public void setCout(int cout) {
-        this.cout = cout;
+    // Обновляет положение птицы на основе ускорения падения.
+    private fun drop() {
+        this.drop += 0.6.toFloat() // Увеличиваем ускорение падения.
+        this._y += this.drop // Обновляем вертикальное положение птицы.
     }
 
-    public int getvFlap() {
-        return vFlap;
+    // Возвращает список битмапов.
+    fun getBitmaps(): ArrayList<Bitmap?> {
+        return _bitmaps
     }
 
-    public void setvFlap(int vFlap) {
-        this.vFlap = vFlap;
-    }
-
-    public int getIdCurrentBitmap() {
-        return idCurrentBitmap;
-    }
-
-    public void setIdCurrentBitmap(int idCurrentBitmap) {
-        this.idCurrentBitmap = idCurrentBitmap;
-    }
-
-    public float getDrop() {
-        return drop;
-    }
-
-    public void setDrop(float drop) {
-        this.drop = drop;
-    }
-
-    public void draw(Canvas canvas) {
-        drop();
-
-        // Check the position of the bird
-        if (this.x < 0 || this.x > Constants.SCREEN_WIDTH || this.y < 0 || this.y > Constants.SCREEN_HEIGHT) {
-            Log.e("Bird", "Bird coordinates are out of screen bounds: x=" + this.x + ", y=" + this.y);
-        }
-
-        Bitmap bitmap = this.getBm();
-        if (bitmap != null) {
-            canvas.drawBitmap(bitmap, this.x, this.y, null);
-        } else {
-            Log.e("Bird", "Bitmap is null");
+    // Устанавливает массив битмапов и масштабирует их до размеров птицы.
+    fun setArrBms(arrBms: ArrayList<Bitmap?>) {
+        this._bitmaps = arrBms
+        for (i in arrBms.indices) {
+            _bitmaps[i] = Bitmap.createScaledBitmap(_bitmaps[i]!!, _width, _height, true)
         }
     }
 
-    private void drop() {
-        this.drop += 0.6;
-        this.y += this.drop;
-    }
+    // Возвращает текущий битмап с учетом анимации и поворота в зависимости от ускорения падения.
+    override fun getBm(): Bitmap? {
+        count++ // Увеличиваем счетчик кадров.
 
-    public ArrayList<Bitmap> getArrBms() {
-        return arrBms;
-    }
-
-    public void setArrBms(ArrayList<Bitmap> arrBms) {
-        this.arrBms = arrBms;
-        for (int i = 0; i < arrBms.size(); i++) {
-            this.arrBms.set(i, Bitmap.createScaledBitmap(this.arrBms.get(i), this.width, this.height, true));
-        }
-    }
-
-    @Override
-    public Bitmap getBm() {
-        cout++;
-        if (this.cout == this.vFlap) {
-            for (int i = 0; i < arrBms.size(); i++) {
-                if (i == arrBms.size() - 1) {
-                    this.idCurrentBitmap = 0;
-                    break;
-                } else if (this.idCurrentBitmap == i) {
-                    idCurrentBitmap = i + 1;
-                    break;
+        // Проверяем, пора ли сменить кадр анимации.
+        if (this.count == this.vFlap) {
+            for (i in getBitmaps().indices) {
+                if (i == getBitmaps().size - 1) { // Если текущий кадр последний, возвращаемся к первому.
+                    this.idCurrentBitmap = 0
+                    break
+                } else if (this.idCurrentBitmap == i) { // Переходим к следующему кадру.
+                    idCurrentBitmap = i + 1
+                    break
                 }
             }
-            cout = 0;
+            count = 0
         }
 
+        // Управляем поворотом птицы в зависимости от ускорения падения.
         if (this.drop < 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(-25);
-            return Bitmap.createBitmap(arrBms.get(idCurrentBitmap), 0, 0, arrBms.get(idCurrentBitmap).getWidth(), arrBms.get(idCurrentBitmap).getHeight(), matrix, true);
+            val matrix = Matrix()
+            matrix.postRotate(-25f) // Поворот вверх.
+            return Bitmap.createBitmap(
+                getBitmaps()[idCurrentBitmap]!!,
+                0,
+                0,
+                getBitmaps()[idCurrentBitmap]!!.width,
+                getBitmaps()[idCurrentBitmap]!!.height,
+                matrix,
+                true
+            )
         } else if (drop >= 0) {
-            Matrix matrix = new Matrix();
+            val matrix = Matrix()
             if (drop > 70) {
-                matrix.postRotate(-25 + (drop * 2));
+                matrix.postRotate(-25 + (drop * 2)) // Сильный поворот вниз при большом ускорении.
             } else {
-                matrix.postRotate(45);
+                matrix.postRotate(45f) // Умеренный поворот вниз.
             }
-            return Bitmap.createBitmap(arrBms.get(idCurrentBitmap), 0, 0, arrBms.get(idCurrentBitmap).getWidth(), arrBms.get(idCurrentBitmap).getHeight(), matrix, true);
+            return Bitmap.createBitmap(
+                getBitmaps()[idCurrentBitmap]!!,
+                0,
+                0,
+                getBitmaps()[idCurrentBitmap]!!.width,
+                getBitmaps()[idCurrentBitmap]!!.height,
+                matrix,
+                true
+            )
         }
 
-        return this.arrBms.get(idCurrentBitmap);
+        return this.getBitmaps()[idCurrentBitmap]
     }
 }

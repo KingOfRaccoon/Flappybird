@@ -1,55 +1,57 @@
-package com.example.flappybirdisreal;
+package com.example.flappybirdisreal
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import java.util.Random
 
-import java.util.Random;
+// Класс Pipe представляет трубу в игре, которая движется слева направо.
+class Pipe(x: Float, y: Float, width: Int, height: Int) : BaseObject(x, y, width, height) {
+    private var isPassed = false // Флаг, указывающий, пролетела ли птица через эту трубу
 
-public class Pipe extends BaseObject {
-    private Bitmap bm;
-    private static int speed;
-    private boolean isPassed;
-    public int getSpeed() {
-        return this.speed;
+    // Возвращает текущий Bitmap для трубы
+    override fun getBm(): Bitmap {
+        return _bm!!
     }
 
-    public void setSpeed(int speed) {
-        Pipe.speed= speed;
+    init {
+        // Установка скорости движения трубы в зависимости от ширины экрана
+        speed = 5 * Constants.SCREEN_WIDTH / 1080
     }
 
-    @Override
-    public Bitmap getBm() {
-        return bm;
+    // Отрисовка трубы на холсте
+    fun draw(canvas: Canvas) {
+        this._x -= speed.toFloat() // Смещение трубы влево на значение скорости
+        canvas.drawBitmap(this._bm!!, this._x, this._y, null)
     }
 
-    public Pipe(float x, float y, int width, int height) {
-        super(x, y, width, height);
-        speed = 5 * Constants.SCREEN_WIDTH / 1080; // Set speed here
+    // Установка статуса "пройденности" трубы
+    fun setPassed(passed: Boolean) {
+        this.isPassed = passed
     }
 
-    public void draw(Canvas canvas) {
-        this.x -= speed; // Move pipe to the left by speed
-        canvas.drawBitmap(this.bm, this.x, this.y, null);
-    }
-    public void setPassed(boolean passed) {
-        this.isPassed = passed;
-    } public boolean isPassed() {
-        return isPassed;
+    // Возвращает статус "пройденности" трубы
+    fun isPassed(): Boolean {
+        return isPassed
     }
 
-    // Đặt lại vị trí ống và trạng thái đã vượt qua khi ra khỏi màn hình
-    public void resetPipe() {
-        setX(Constants.SCREEN_WIDTH);
-        setPassed(false);  // Đặt lại trạng thái đã vượt qua
+    // Сброс трубы в начальное положение (за пределы экрана справа)
+    fun resetPipe() {
+        setX(Constants.SCREEN_WIDTH.toFloat()) // Установка X-координаты за экран
+        setPassed(false) // Сброс флага "пройденности"
     }
 
-    public void ramdomY() {
-        Random r = new Random();
-        this.y = -r.nextInt(this.height / 2); // Randomly generate a Y position
+    // Установка случайной высоты трубы
+    fun ramdomY() {
+        val r = Random()
+        this._y = -r.nextInt(this._height / 2).toFloat() // Генерация случайной высоты в пределах половины высоты экрана
     }
 
-    @Override
-    public void setBm(Bitmap bm) {
-        this.bm = Bitmap.createScaledBitmap(bm, width, height, true);
+    // Установка Bitmap с масштабированием до размеров трубы
+    override fun setBm(bm: Bitmap?) {
+        this._bm = Bitmap.createScaledBitmap(bm!!, _width, _height, true)
+    }
+
+    companion object {
+        private var speed: Int = 0 // Скорость движения труб
     }
 }

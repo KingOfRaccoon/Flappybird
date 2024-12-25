@@ -1,6 +1,7 @@
-package com.example.flappybirdisreal;
+package com.example.flappybirdisreal
 
-public class Constants {
-    public static int SCREEN_WIDTH;
-    public static int SCREEN_HEIGHT;
+object Constants {
+    // Размеры экрана
+    var SCREEN_WIDTH: Int = 0
+    var SCREEN_HEIGHT: Int = 0
 }

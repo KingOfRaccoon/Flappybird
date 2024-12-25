@@ -1,70 +1,78 @@
-package com.example.flappybirdisreal;
+package com.example.flappybirdisreal
 
-import android.graphics.Bitmap;
-import android.graphics.Rect;
+import android.graphics.Bitmap
 
-public class BaseObject {
-    protected float x,y;
-    protected int width,height;
-    protected Rect rect;
-    protected Bitmap bm;
+// Базовый класс для игровых объектов, определяет основные свойства и методы для управления их положением и размерами
+open class BaseObject {
+    // Координата X объекта
+    protected var _x: Float = 0f
+    // Координата Y объекта
+    protected var _y: Float = 0f
+    // Ширина объекта
+    protected var _width: Int = 0
+    // Высота объекта
+    protected var _height: Int = 0
+    // Битмап (графическое представление) объекта
+    protected open var _bm: Bitmap? = null
 
-    public BaseObject() {
+    // Конструктор без параметров, инициализирует объект значениями по умолчанию
+    constructor()
+
+    // Конструктор с параметрами для задания начальных значений координат, ширины и высоты
+    constructor(x: Float, y: Float, width: Int, height: Int) {
+        this._x = x
+        this._y = y
+        this._width = width
+        this._height = height
     }
 
-    public BaseObject(float x, float y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-
+    // Получение текущей координаты X объекта
+    fun getX(): Float {
+        return _x
     }
 
-    public Rect getRect() {
-        return new Rect((int) this.x, (int) this.y, (int) (this.x+this.width), (int) (this.y+this.height));
+    // Установка новой координаты X объекта
+    fun setX(x: Float) {
+        this._x = x
     }
 
-    public void setRect(Rect rect) {
-        this.rect = rect;
+    // Получение текущей координаты Y объекта
+    fun getY(): Float {
+        return _y
     }
 
-    public float getX() {
-        return x;
+    // Установка новой координаты Y объекта
+    fun setY(y: Float) {
+        this._y = y
     }
 
-    public void setX(float x) {
-        this.x = x;
+    // Получение текущей ширины объекта
+    fun getWidth(): Int {
+        return _width
     }
 
-    public float getY() {
-        return y;
+    // Установка новой ширины объекта
+    fun setWidth(width: Int) {
+        this._width = width
     }
 
-    public void setY(float y) {
-        this.y = y;
+    // Получение текущей высоты объекта
+    fun getHeight(): Int {
+        return _height
     }
 
-    public int getWidth() {
-        return width;
+    // Установка новой высоты объекта
+    fun setHeight(height: Int) {
+        this._height = height
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    // Получение текущего битмапа объекта (может быть переопределено в дочерних классах)
+    open fun getBm(): Bitmap? {
+        return _bm
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public Bitmap getBm() {
-        return bm;
-    }
-
-    public void setBm(Bitmap bm) {
-        this.bm = bm;
+    // Установка нового битмапа объекта (может быть переопределено в дочерних классах)
+    open fun setBm(bm: Bitmap?) {
+        this._bm = bm
     }
 }
